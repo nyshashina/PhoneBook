@@ -29,8 +29,13 @@ public class PhoneBookRecord {
     }
 
     public static PhoneBookRecord fromString(String s) {
-        String[] ss = s.split("[ \\t]");
-        if (ss.length == 6) {
+        String[] ss = s.trim().split("[ \\t]");
+        int e = checkNumberOfElems(ss);
+        if (e > 0) {
+            throw new IllegalArgumentException("Данных больше, чем необходимо");
+        } else if (e < 0) {
+            throw new IllegalArgumentException("Данных меньше, чем необходимо");
+        } else {
             int snIndex = surNameIndex(ss);
             String sn = ss[snIndex];
             String fn = ss[snIndex + 1];
@@ -45,11 +50,16 @@ public class PhoneBookRecord {
             char gen = g.charAt(0);
 
             return new PhoneBookRecord(sn, fn, p, gen, bd, pn);
-
-        } else if (ss.length > 6) {
-            throw new IllegalArgumentException("Данных больше, чем необходимо");
         }
-        throw new IllegalArgumentException("Данных меньше, чем необходимо");
+    }
+
+    static int checkNumberOfElems(String[] ss) {
+        if (ss.length > 6) {
+            return 1;
+        } else if (ss.length < 6) {
+            return -1;
+        }
+        return 0;
     }
 
     static int surNameIndex(String[] ss) {
@@ -115,7 +125,7 @@ public class PhoneBookRecord {
                 if (gIndex == -1) {
                     gIndex = i;
                 } else {
-                    throw new IllegalArgumentException("Пол введен дважды");
+                    throw new IllegalArgumentException("Пол введен дважды"); //unreachable
                 }
             }
         }
@@ -190,7 +200,7 @@ public class PhoneBookRecord {
     }
 
     static void checkNameSymbols(String s) {
-        if (!s.matches("^[A-Za-zА-Яа-я]+([ -][A-Za-zА-Яа-я]+)*$")) {
+        if (!s.matches("^[A-Za-zА-Яа-я]+([ -][A-Za-zА-Яа-я]+)*$") || s.equals("m") || s.equals("f")) {
             throw new IllegalArgumentException("Значение содержит недопустимые символы");
         }
     }

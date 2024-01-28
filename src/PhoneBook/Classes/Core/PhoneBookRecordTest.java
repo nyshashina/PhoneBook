@@ -52,6 +52,72 @@ class PhoneBookRecordTest {
     }
 
     @Test
+    void fromString() {
+        assertEquals("Данных больше, чем необходимо", assertThrows(IllegalArgumentException.class,
+                () -> PhoneBookRecord.fromString("Ivanov Ivan Ivanovich m 01.01.1990 89997773322 kjlhgiu")
+        ).getMessage());
+
+        assertEquals("Данных меньше, чем необходимо", assertThrows(IllegalArgumentException.class,
+                () -> PhoneBookRecord.fromString("Ivanov Ivan Ivanovich m")
+        ).getMessage());
+
+        assertEquals("Ivanov Ivan Ivanovich 01.01.1990 89997773322 m",
+                PhoneBookRecord.fromString("Ivanov Ivan Ivanovich m 01.01.1990 89997773322").toString());
+
+        assertEquals("Ivanov Ivan Ivanovich 01.01.1990 89997773322 m",
+                PhoneBookRecord.fromString("89997773322 Ivanov Ivan Ivanovich m 01.01.1990 ").toString());
+
+        assertEquals("Ivanov Ivan Ivanovich 01.01.1990 89997773322 m",
+                PhoneBookRecord.fromString(" Ivanov Ivan Ivanovich 89997773322 m 01.01.1990").toString());
+
+        assertEquals("Ivanov Ivan Ivanovich 01.01.1990 89997773322 m",
+                PhoneBookRecord.fromString("89997773322 m 01.01.1990 Ivanov Ivan Ivanovich").toString());
+
+        assertEquals("Ivanov Ivan Ivanovich 01.01.1990 89997773322 m",
+                PhoneBookRecord.fromString("89997773322 01.01.1990 m Ivanov Ivan Ivanovich").toString());
+
+        assertEquals("Фамилия, имя или отчество введены неверно", assertThrows(IllegalArgumentException.class,
+                () -> PhoneBookRecord.fromString("Ivanov Ivan Ivanovi2ch m 01.01.1990 89997773322")
+        ).getMessage());
+
+        assertEquals("Фамилия, имя или отчество введены неверно", assertThrows(IllegalArgumentException.class,
+                () -> PhoneBookRecord.fromString("/Ivanov Ivan Ivanovich m 01.01.1990 89997773322")
+        ).getMessage());
+
+        assertEquals("Фамилия, имя или отчество введены неверно", assertThrows(IllegalArgumentException.class,
+                () -> PhoneBookRecord.fromString("\\Ivanov Ivan Ivanovich m 01.01.1990 89997773322")
+        ).getMessage());
+
+        assertEquals("Фамилия, имя или отчество введены неверно", assertThrows(IllegalArgumentException.class,
+                () -> PhoneBookRecord.fromString("Ivanov 1337 Ivanovich m 01.01.1990 89997773322")
+        ).getMessage());
+
+        assertEquals("Дата рождения введена дважды", assertThrows(IllegalArgumentException.class,
+                () -> PhoneBookRecord.fromString("Ivanov Ivan Ivanovich 01.01.1990 01.01.1990 89997773322")
+        ).getMessage());
+
+        assertEquals("Дата рождения не распознана", assertThrows(IllegalArgumentException.class,
+                () -> PhoneBookRecord.fromString("Ivanov Ivan Ivanovich m hbt65r86t 89997773322")
+        ).getMessage());
+
+        assertEquals("Номер телефона не распознан", assertThrows(IllegalArgumentException.class,
+                () -> PhoneBookRecord.fromString("Ivanov Ivan Ivanovich m 01.01.1990 gftjgfht786")
+        ).getMessage());
+
+        assertEquals("Номер телефона не распознан", assertThrows(IllegalArgumentException.class,
+                () -> PhoneBookRecord.fromString("Ivanov Ivan Ivanovich m 01.01.1990 888888888888888888888888888888")
+        ).getMessage());
+
+        assertEquals("Номер телефона введен дважды", assertThrows(IllegalArgumentException.class,
+                () -> PhoneBookRecord.fromString("Ivanov Ivan Ivanovich m 89997773322 89997773322")
+        ).getMessage());
+
+        assertEquals("Пол не распознан", assertThrows(IllegalArgumentException.class,
+                () -> PhoneBookRecord.fromString("Ivanov Ivan Ivanovich mf 01.01.1990 89997773322")
+        ).getMessage());
+    }
+
+    @Test
     void _toString() {
         assertEquals("Ivanov Ivan Ivanovich 01.01.1990 89997773322 m", r.toString());
 
@@ -321,5 +387,11 @@ class PhoneBookRecordTest {
 
         r.setBirthDate("29.02.2004");
         assertEquals("29.02.2004", r.getBirthDate());
+    }
+
+    @Test
+    void genderIndex() {
+        assertTrue(assertThrows(IllegalArgumentException.class,
+                () -> PhoneBookRecord.genderIndex("f m".split(" "))).getMessage().contains("Пол введен дважды"));
     }
 }

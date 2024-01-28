@@ -3,7 +3,6 @@ package PhoneBook.Classes;
 import PhoneBook.Classes.Core.PhoneBookRecord;
 import PhoneBook.Interfaces.IPhoneBookModel;
 import PhoneBook.Interfaces.IPhoneBookView;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.Timeout;
 
@@ -32,6 +31,7 @@ class MockModelError implements IPhoneBookModel {
 class MockTextUIView extends TextUIView implements IPhoneBookView {
 
     String message = null;
+    String pbr = "Ivanov Ivan Ivanovich 01.01.1990 89997773322 m";
     boolean r = true;
     public MockTextUIView(InputStream in, PrintStream out) {
         super(in, out);
@@ -40,7 +40,7 @@ class MockTextUIView extends TextUIView implements IPhoneBookView {
     public String readPhoneBookRecord() {
         if (r) {
             r = false;
-            return "Ivanov Ivan Ivanovich 01.01.1990 89997773322 m";
+            return pbr;
         } else {
             return "exit";
         }
@@ -77,6 +77,18 @@ class PhoneBookPresenterTest {
         assertNotNull(m.record);
         assertEquals("Ivanov Ivan Ivanovich 01.01.1990 89997773322 m", m.record.toString());
         assertEquals("Данные сохранены", v.message);
+    }
+
+    @Test
+    void run_printsExceptionMessage(){
+        MockModelOk m = new MockModelOk();
+        MockTextUIView v = new MockTextUIView(System.in, System.out);
+        v.pbr = "Iva_nov Ivan Ivanovich 01.01.1990 89997773322 m";
+        PhoneBookPresenter pbp = new PhoneBookPresenter(m, v);
+        pbp.run();
+        assertNull(m.record);
+        assertNotNull(v.message);
+        assertEquals("Фамилия, имя или отчество введены неверно", v.message);
     }
 
     @Test
